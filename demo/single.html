@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Single</title>
+    <title>Alkitab</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -18,23 +18,23 @@
             margin: 0;
             overflow: hidden;
             height: 100%;
-            display: flex;
-            display: -webkit-flex;
-            flex-direction: column;
-            -webkit-flex-direction: column;
+            /*display: flex;*/
+            /*display: -webkit-flex;*/
+            /*flex-direction: column;*/
+            /*-webkit-flex-direction: column;*/
         }
 
-        * {
+        /** {
             box-sizing: border-box;
-        }
+        }*/
 
         .book {
             background-color: yellow;
-            /*border: 1px solid red;*/
-            /*width: 100%;*/
-            /*height: 100%;*/
-            flex: 1;
-            -webkit-flex: 1;
+            /*border: 10px solid red;*/
+            width: 100%;
+            height: 100%;
+            /*flex: 1;*/
+            /*-webkit-flex: 1;*/
             overflow: hidden;
         }
 
@@ -45,19 +45,13 @@
             top: -99999999px;
         }
 
-        .jsb-page {
-            /*background-color: purple;*/
-            position: absolute;
-        }
-
-        .jsb-page.jsb-page-1 {
-            right: 0;
-        }
-
         .jsb-section {
             /*background-color: green;*/
             overflow: hidden;
             position: relative;
+            /*font-size: 11px;*/
+            font-family: Arial;
+            line-height: 130%;
         }
 
         .jsb-section .jsb-section-content {
@@ -71,8 +65,15 @@
         }
 
         .jsb-page {
-            font-family: Arial;
-            /*line-height: 130%;*/
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .jsb-page.jsb-page-1 {
+            right: 0;
+        }
+
+        .jsb-page.jsb-hidden {
             -webkit-transform: translateY(-100%);
             display: none;
         }
@@ -91,6 +92,15 @@
         .jsb-page img {
             display: block;
             margin: 0 auto;
+            max-width: 100%;
+        }
+
+        .jsb-section-ender {
+            background-color: red;
+            width: 3px;
+            height: 3px;
+            display: inline-block;
+            /*float: left;*/
         }
 
     </style>
@@ -163,19 +173,19 @@
         }
 
         $(bookEl).on('click touchdown', function(evt) {
-            if (book.showPage === 1) {
+            // if (book.showPage === 1) {
                 if (evt.offsetX <= $(bookEl).width() / 2) {
                     book.prev();
                 } else {
                     book.next();
                 }
-            } else {
-                if ($(evt.target).parents('.jsb-page').hasClass('jsb-page-1')) {
-                    book.next();
-                } else {
-                    book.prev();
-                }
-            }
+            // } else {
+            //     if ($(evt.target).parents('.jsb-page').hasClass('jsb-page-1')) {
+            //         book.next();
+            //     } else {
+            //         book.prev();
+            //     }
+            // }
         });
 
         // $.get('../books/single/body.html').then(function(content) {
@@ -191,10 +201,10 @@
                 showPage: showPage
             });
 
-            book.addEventListener('section:getSource', function(section, cb) {
-                cb('hahaha');
-                // $.get(section.src).then(cb);
-            });
+            // book.addEventListener('section:getSource', function(section, cb) {
+            //     cb('hahaha');
+            //     // $.get(section.src).then(cb);
+            // });
 
             book.addEventListener('section:calculate', function() {
                 console.log(arguments);

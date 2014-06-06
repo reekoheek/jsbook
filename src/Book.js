@@ -137,9 +137,8 @@ Book.prototype = jsb.Emitter({
             var page = arguments[i],
                 section = this.getSectionByPage(page);
             if (section) {
-                var p = section.getPage(page);
-                console.log(p[0]);
-                this.$hiddenPages[i].html(p);
+                // this.$hiddenPages[i].html(section.getPage(page));
+                section.renderPage(page, this.$hiddenPages[i]);
             } else {
                 console.error('[Book]', 'Section not found for page:', page);
             }
@@ -164,7 +163,8 @@ Book.prototype = jsb.Emitter({
             var page = arguments[i],
                 section = this.getSectionByPage(page);
             if (section) {
-                this.$activePages[i].html(section.getPage(page));
+                // this.$activePages[i].html(section.getPage(page));
+                section.renderPage(page, this.$activePages[i]);
             } else {
                 console.error('[Book]', 'Section not found for:', page);
             }
@@ -258,7 +258,7 @@ Book.prototype = jsb.Emitter({
                 break;
             }
         }
-        console.log('getSectionByPage', page, found);
+        // console.log('getSectionByPage', page, found);
         return found;
     },
 

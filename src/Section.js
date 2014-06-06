@@ -18,6 +18,8 @@ var Section = function(options) {
     }, options);
 };
 
+Section.index = 0;
+
 Section.prototype = jsb.Emitter({
     calculate: function(start) {
         var that = this;
@@ -35,6 +37,7 @@ Section.prototype = jsb.Emitter({
                     that.range = [start, lastPage];
 
                     that.$template = that.globalSandbox(true).clone();
+                    that.$template.attr('data-index', (that.index = Section.index++));
 
                     resolve(lastPage);
                 } catch(e) {
@@ -108,6 +111,15 @@ Section.prototype = jsb.Emitter({
         var $section = this.$template.clone();
         $section.children().css('-webkit-transform', 'translateX(-' + ((page - this.range[0]) * this.book.getPageDimension('w')) + 'px)');
         return $section;
+    },
+
+    renderPage: function(page, $container)  {
+        var $child = $container.children();
+        if (!$child.length || $child.attr('data-index') !== this.$template.attr('data-index')) {
+            $container.html(this.getPage(page));
+        } else {
+            $child.children().css('-webkit-transform', 'translateX(-' + ((page - this.range[0]) * this.book.getPageDimension('w')) + 'px)');
+        }
     }
 });
 
