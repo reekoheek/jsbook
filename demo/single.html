@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Single</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            display: -webkit-flex;
+            flex-direction: column;
+            -webkit-flex-direction: column;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .book {
+            background-color: yellow;
+            /*border: 1px solid red;*/
+            /*width: 100%;*/
+            /*height: 100%;*/
+            flex: 1;
+            -webkit-flex: 1;
+            overflow: hidden;
+        }
+
+        .jsb-sandbox {
+            position: absolute;
+            /*opacity: 0;*/
+            /*background-color: black;*/
+            top: -99999999px;
+        }
+
+        .jsb-page {
+            /*background-color: purple;*/
+            position: absolute;
+        }
+
+        .jsb-page.jsb-page-1 {
+            right: 0;
+        }
+
+        .jsb-section {
+            /*background-color: green;*/
+            overflow: hidden;
+            position: relative;
+        }
+
+        .jsb-section .jsb-section-content {
+            -webkit-column-gap: 0;
+            /*background-color: blue;*/
+            position: absolute;
+        }
+
+        .jsb-sandbox .jsb-section .jsb-section-content {
+            background-color: #000;
+        }
+
+        .jsb-page {
+            font-family: Arial;
+            /*line-height: 130%;*/
+            -webkit-transform: translateY(-100%);
+            display: none;
+        }
+
+        .jsb-page.jsb-active {
+            -webkit-transform: translateY(0);
+            display: block;
+        }
+
+        .jsb-page * {
+            -webkit-font-smoothing: subpixel-antialiased;
+            text-rendering: auto;
+            word-wrap: break-word;
+        }
+
+        .jsb-page img {
+            display: block;
+            margin: 0 auto;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="book">
+</div>
+
+<script type="text/javascript" src="../lib/jquery-2.1.1.min.js"></script>
+<!-- <script type="text/javascript" src="../lib/hammer.min.js"></script> -->
+<!-- <script type="text/javascript" src="../lib/promise-1.0.0.js"></script> -->
+<script type="text/javascript" src="../src/core.js"></script>
+<script type="text/javascript" src="../src/Book.js"></script>
+<script type="text/javascript" src="../src/Section.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var bookEl = document.querySelector('.book'),
+            book,
+            showPage = 1;
+
+        if (typeof(window.orientation) === 'undefined') {
+            if (window.innerWidth / window.innerHeight > 1) {
+                showPage = 2;
+            }
+        } else {
+            if (window.orientation == -90 || window.orientation == 90) {
+                showPage = 2;
+            }
+        }
+
+        if (typeof(window.orientation) === 'undefined') {
+            var resizeTimeout;
+            window.addEventListener('resize', function() {
+                var showPage = 1;
+                if (window.innerWidth / window.innerHeight > 1) {
+                    showPage = 2;
+                }
+
+                if (book.showPage !== showPage) {
+                    book.$el.html('');
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(function() {
+                        book.initialize({showPage: showPage}).then(function() {
+                            book.display();
+                        });
+                    }, 0);
+                }
+            }, true);
+        } else {
+            var orientationTimeout;
+            $(window).bind('orientationchange', function () {
+                var showPage = 1;
+                if (window.orientation == -90 || window.orientation == 90) {
+                    // this.orientation = "landscape";
+                    showPage = 2;
+                } else {
+                    // this.orientation = "portrait";
+                }
+                if (book.showPage !== showPage) {
+                    book.$el.html('');
+                    clearTimeout(orientationTimeout);
+                    orientationTimeout = setTimeout(function() {
+                        book.initialize({showPage: showPage}).then(function() {
+                            book.display();
+                        });
+                    }, 300);
+                }
+            });
+        }
+
+        $(bookEl).on('click touchdown', function(evt) {
+            if (book.showPage === 1) {
+                if (evt.offsetX <= $(bookEl).width() / 2) {
+                    book.prev();
+                } else {
+                    book.next();
+                }
+            } else {
+                if ($(evt.target).parents('.jsb-page').hasClass('jsb-page-1')) {
+                    book.next();
+                } else {
+                    book.prev();
+                }
+            }
+        });
+
+        // $.get('../books/single/body.html').then(function(content) {
+            // content = jsb.Section.prototype.normalizeContent(content);
+            book = window.book = new jsb.Book({
+                el: bookEl,
+                // contents: [
+                //     content
+                // ],
+                sources: [
+                    '../books/single/body.html'
+                ],
+                showPage: showPage
+            });
+
+            book.addEventListener('section:getSource', function(section, cb) {
+                cb('hahaha');
+                // $.get(section.src).then(cb);
+            });
+
+            book.addEventListener('section:calculate', function() {
+                console.log(arguments);
+            });
+
+            book.initialize().then(function() {
+                book.display();
+            }).then(function() {
+                console.log('Done');
+            }, function(e) {
+                console.error('Caught error:', e.message);
+                console.error(e.stack);
+            });
+        // });
+
+
+    });
+</script>
+
+
+</body>
+</html>
