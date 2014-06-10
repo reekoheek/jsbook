@@ -278,6 +278,14 @@ Book.prototype = jsb.Emitter({
         } else if (prop[0] === 'h') {
             return h;
         }
+    },
+
+    getPageLength : function(){
+        if(this.sections.length){
+            return this.sections[this.sections.length - 1].range[1];
+        }else{
+            return 0;
+        }
     }
 
 });
