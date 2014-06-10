@@ -66,7 +66,7 @@
 
         .jsb-page {
             position: absolute;
-            pointer-events: none;
+            /*pointer-events: none;*/
         }
 
         .jsb-page.jsb-page-1 {
@@ -112,6 +112,9 @@
 
 <script type="text/javascript" src="../lib/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="../lib/promise-1.0.0.js"></script>
+<script type="text/javascript" src="../lib/hammer.min.js"></script>
+<script type="text/javascript" src="../lib/jquery.touchSwipe.min.js"></script>
+
 <script type="text/javascript" src="../src/core.js"></script>
 <script type="text/javascript" src="../src/Book.js"></script>
 <script type="text/javascript" src="../src/Section.js"></script>
@@ -171,20 +174,30 @@
             });
         }
 
-        $(bookEl).on('click touchdown', function(evt) {
-            // if (book.showPage === 1) {
-                if (evt.offsetX <= $(bookEl).width() / 2) {
-                    book.prev();
-                } else {
-                    book.next();
+        $(".book").swipe({
+
+            swipeStatus:function(event, phase, direction, distance, duration, fingers) {
+                if(phase == 'end'){
+
+                    if(distance > 100 && direction == 'left' && !book.CHANGEPAGE){ // next
+                        book.CHANGEPAGE = true;
+                        setTimeout(function(){book.CHANGEPAGE = false},300);
+                        if(book.page < book.getPageLength()) book.next();
+                    }
+
+                    if(distance > 100 && direction == 'right' && !book.CHANGEPAGE){ // prev
+                        book.CHANGEPAGE = true;
+                        setTimeout(function(){book.CHANGEPAGE = false},300);
+                        if(book.page > 0) book.prev();
+                    }
+
                 }
-            // } else {
-            //     if ($(evt.target).parents('.jsb-page').hasClass('jsb-page-1')) {
-            //         book.next();
-            //     } else {
-            //         book.prev();
-            //     }
-            // }
+
+            },
+
+            threshold:100,
+            maxTimeThreshold:600,
+            fingers:'all'
         });
 
         var sources = [],
@@ -198,19 +211,28 @@
         }
 
         // $.get('../books/single/body.html').then(function(content) {
-            // content = jsb.Section.prototype.normalizeContent(content);
+        //     content = jsb.Section.prototype.normalizeContent(content);
         book = window.book = new jsb.Book({
             el: bookEl,
             // contents: [
             //     content
             // ],
             sources: sources,
-            showPage: showPage
+            showPage: showPage,
+            CHANGEPAGE : false
         });
 
         book.addEventListener('section:calculate', function(section, b) {
             console.log('calc', section.src);
+
         });
+
+        book.addEventListener('section:getSource', function(section, cb) {
+            console.log('faridh');
+            // cb('hahaha');
+            $.get(section.src).then(cb);
+        });
+
 
         // book.addEventListener('book:swap', function(book, page, cb) {
         //     var TRANSITION_END = 'transitionend';
