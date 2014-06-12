@@ -137,7 +137,6 @@ Book.prototype = jsb.Emitter({
             var page = arguments[i],
                 section = this.getSectionByPage(page);
             if (section) {
-                // this.$hiddenPages[i].html(section.getPage(page));
                 section.renderPage(page, this.$hiddenPages[i]);
             } else {
                 console.error('[Book]', 'Section not found for page:', page);
@@ -163,7 +162,6 @@ Book.prototype = jsb.Emitter({
             var page = arguments[i],
                 section = this.getSectionByPage(page);
             if (section) {
-                // this.$activePages[i].html(section.getPage(page));
                 section.renderPage(page, this.$activePages[i]);
             } else {
                 console.error('[Book]', 'Section not found for:', page);
@@ -171,6 +169,20 @@ Book.prototype = jsb.Emitter({
         }
 
         return this.$activePages;
+    },
+
+    moveTo: function(selector) {
+        var page = -1;
+
+        for (var i in this.sections) {
+            page = this.sections[i].queryPageSelector(selector);
+            if (page >= 0) {
+                this.go(page);
+                return;
+            }
+        }
+
+        throw new Error("page not found");
     },
 
     go: function(page) {
@@ -230,8 +242,6 @@ Book.prototype = jsb.Emitter({
                     return resolve();
                 }
 
-                // console.log('calcNext', iterator);
-
                 sections[iterator].calculate(start).then(function(last) {
                     start = last + 1;
                     iterator++;
@@ -258,15 +268,13 @@ Book.prototype = jsb.Emitter({
                 break;
             }
         }
-        // console.log('getSectionByPage', page, found);
+
         return found;
     },
 
     getPageDimension: function(prop) {
         var w = Math.floor((this.$el.width() / this.showPage) - (this.leftMargin + this.rightMargin)),
             h = this.$el.height() - this.topMargin - this.bottomMargin;
-
-        // console.log(w, h);
 
         if (!prop) {
             return {
