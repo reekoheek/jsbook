@@ -120,6 +120,24 @@ Section.prototype = jsb.Emitter({
         } else {
             $child.children().css('-webkit-transform', 'translateX(-' + ((page - this.range[0]) * this.book.getPageDimension('w')) + 'px)');
         }
+    },
+
+    queryPageSelector: function (selector) {
+
+        jsb.sandbox().append(this.$template);
+        var $sandbox = this.$template,
+            $el  = $sandbox.find(selector);
+
+        if(!$el.length){
+            this.$template.remove();
+            return -1;
+        }
+
+        var pos = $el.position(),
+            page = this.range[0] + Math.ceil(pos.left / this.book.getPageDimension('w'));
+
+        this.$template.remove();
+        return page;
     }
 });
 
